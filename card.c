@@ -26,16 +26,17 @@ main(){
   c = cards_addcard(c, 0);
   c = cards_addcard(c, 3);
   c = cards_addcard(c, 10);
-  c = cards_addcard(c, 20);
+  /* c = cards_addcard(c, 20); */
   c = cards_addcard(c, 30);
   c = cards_addcard(c, 31);
   c = cards_addcard(c, 32);
-  c = cards_addcard(c, 33);
-  c = cards_addcard(c, 60);
-  c = cards_addcard(c, 40);
-  c = cards_addcard(c, 50);
+  /* c = cards_addcard(c, 33); */
+  /* c = cards_addcard(c, 60); */
+  /* c = cards_addcard(c, 40); */
+  /* c = cards_addcard(c, 50); */
   c = cards_addcard(c, 7);
   cards_display(c);
+  printf("\n");
   printf("countnum %d\n", cards_countnum(c));
 }
 
@@ -47,8 +48,8 @@ int cards_countnum(Cards c){
 
   num=0;
   while(c.c !=0){
-    c.c = c.c >>1;
-    if(c.c | 1 != 0)  num++;	/* why not ? */
+    if(c.c & 1 == 1)  num++;	/* why not ? */
+    c.c = c.c >> 1;
   }
   return num;
 }
