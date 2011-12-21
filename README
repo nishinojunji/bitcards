@@ -1,1 +1,8 @@
-hello bitcards
+/* junji nishino nishinojunji@gmail.com 2011 */
+
+bitcard for multiplayer game theory simulations
+
+card data container class
+daihinmin play control class
+
+montecarlo algorithm class
