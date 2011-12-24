@@ -21,7 +21,7 @@ int cards_countnum(Cards c);
 Cards cards_addcard(Cards c, int i);
 Cards cards_init();
 Cards cards_dellower(Cards c, Cards d);
-
+Cards cards_getlowest(Cards c);
 
 /* ----- main ----- */
 main(){
@@ -30,8 +30,8 @@ main(){
   c = cards_init();
   d = cards_init();
 
-  c = cards_addcard(c, 0);
-  c = cards_addcard(c, 3);
+  /* c = cards_addcard(c, 0); */
+  /* c = cards_addcard(c, 3); */
   c = cards_addcard(c, 10);
   /* c = cards_addcard(c, 20); */
   c = cards_addcard(c, 30);
@@ -44,12 +44,12 @@ main(){
   c = cards_addcard(c, 7);
   cards_display(c);  printf("\n");
 
-  d = cards_addcard(d, 31);
-  cards_display(d);  printf("\n");
+  /* d = cards_addcard(d, 31); */
+  /* cards_display(d);  printf("\n"); */
   
   /*  printf("countnum %d\n", cards_countnum(c)); */
-
-  cards_display(cards_dellower(c, d)) ;  printf("\n");
+  /* cards_display(cards_dellower(c, d)) ;  printf("\n"); */
+  cards_display(cards_getlowest(c)) ;  printf("\n");
 
 }
 
@@ -61,7 +61,7 @@ int cards_countnum(Cards c){
 
   num=0;
   while(c.c !=0){
-    if(c.c & 1 == 1)  num++;	/* why not ? */
+    if(c.c & 1 == 1)  num++;
     c.c = c.c >> 1;
   }
   return num;
@@ -72,6 +72,12 @@ Cards cards_dellower(Cards c, Cards d){
   myint64 mask;
   mask = ((~d.c)+1) ^ d.c; /* 00001000 -> 11110000 */
   c.c = c.c & mask;
+  return c;
+}
+
+/* 00101000 -> 00001000 */
+Cards cards_getlowest(Cards c){
+  c.c = (~c.c + 1) & c.c;
   return c;
 }
 
