@@ -31,12 +31,15 @@ Gamevalue solver(Gamestate s);
 Gamestate next_state(Gamestate s, Hands p);
 Plays plays_makecanonicals(Gamestate s);
 Plays plays_add(Plays ps, Hands h);
+Hands hands_pass();
 Hands hands_lowest(Hands myhand);
 Hands hands_dellowest(Hands myhand);
 Hands hands_dellower(Hands myhand, Hands ba);
 int hands_num(Hands myhand);
 Hands hands_pack(Hands myhand);
 Hands plays_getplay(Plays plays, int n);
+Hands hands_init();
+
 Gamevalue gamevalue_zero(int playernum);
 int is_leaf(Gamestate s);
 Gamevalue eval_state(Gamestate s);
@@ -44,12 +47,28 @@ Gamevalue gamevalue_merge(Gamevalue v, Gamevalue vmax);
 Gamestate gamestate_init();
 Plays plays_init();
 
-/* solver main */
+/* ----- solver main ----- */
 
 main(){
   Gamestate s;
   s = gamestate_init();
   solver(s);
+}
+
+Gamestate gamestate_init(){
+  Gamestate gs;
+  int i;
+  
+  gs.playernum = 3;
+  for (i=0; i<gs.playernum; i++){
+    gs.hand[i] = hands_init();
+    gs.passes[i] = 0;
+    gs.win[i] = 0;
+  }
+  gs.lastplayer = gs.playernum;
+  gs.player = gs.playernum;
+  gs.ba = hands_init();
+  return gs;
 }
 
 Gamevalue solver(Gamestate s){
@@ -109,6 +128,15 @@ Plays plays_makecanonicals(Gamestate s){
   return ps;
 }
 
+Hands hands_pass(){
+  /* stab */
+  /* return pass as a move of game */
+}
+
+Hands hands_init(){
+  /* stab */
+}
+
 
 /* ----- support functions ----- */
 Plays plays_init(){
@@ -145,10 +173,10 @@ Hands hands_dellower(Hands myhand, Hands ba){
   }
   
   myhand = hands_pack(myhand);
-  return myhands;
+  return myhand;
 }
 
-int hands_num(myhand){
+int hands_num(Hands myhand){
   return myhand.n;
 }
 
@@ -187,7 +215,7 @@ int is_leaf(Gamestate s){
   int i;
 
   for(i=0; i<s.playernum; i++){
-    if(s.win[playernum] == 0) return 0;
+    if(s.win[s.playernum] == 0) return 0;
   }
 
   return 1;
