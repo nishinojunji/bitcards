@@ -1,4 +1,5 @@
 /* solver.c */
+#include<stdio.h>
 
 typedef struct{
   int n;
@@ -32,6 +33,7 @@ Gamestate next_state(Gamestate s, Hands p);
 Plays plays_makecanonicals(Gamestate s);
 Plays plays_add(Plays ps, Hands h);
 Hands hands_pass();
+int hands_is_pass(Hands hs);
 Hands hands_lowest(Hands myhand);
 Hands hands_dellowest(Hands myhand);
 Hands hands_dellower(Hands myhand, Hands ba);
@@ -58,7 +60,8 @@ main(){
 Gamestate gamestate_init(){
   Gamestate gs;
   int i;
-  
+
+  printf("gamestate_init : stub now \n");
   gs.playernum = 3;
   for (i=0; i<gs.playernum; i++){
     gs.hand[i] = hands_init();
@@ -131,10 +134,25 @@ Plays plays_makecanonicals(Gamestate s){
 Hands hands_pass(){
   /* stab */
   /* return pass as a move of game */
+  Hands pass;
+
+  pass.n = 0;
+  pass.card[0] = 0;
+  return pass;
+}
+
+int hands_is_pass(Hands hs){
+  if(hs.n == 0 && hs.card[0] == 0)
+    return 1;
+  else
+    return 0;
 }
 
 Hands hands_init(){
-  /* stab */
+  Hands hs;
+
+  hs.n = 0;
+  return hs;
 }
 
 
