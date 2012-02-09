@@ -2,7 +2,7 @@
 #include<stdio.h>
 
 typedef struct{
-  int n;
+  int n;			/* number of cards in hand */
   int card[13];			/* 1-53, 0 nane */
 } Hands;
 
@@ -30,6 +30,10 @@ typedef struct{
 /* ----- prototypes ----- */
 Gamevalue solver(Gamestate s);
 Gamestate next_state(Gamestate s, Hands p);
+Gamestate gamestate_init();
+void gamestate_display(Gamestate s);
+
+void hands_display(Hands hs);
 Plays plays_makecanonicals(Gamestate s);
 Plays plays_add(Plays ps, Hands h);
 Hands hands_pass();
@@ -37,6 +41,7 @@ int hands_is_pass(Hands hs);
 Hands hands_lowest(Hands myhand);
 Hands hands_dellowest(Hands myhand);
 Hands hands_dellower(Hands myhand, Hands ba);
+Hands hands_delete(Hands hs, Hands hlow);
 int hands_num(Hands myhand);
 Hands hands_pack(Hands myhand);
 Hands plays_getplay(Plays plays, int n);
@@ -46,7 +51,6 @@ Gamevalue gamevalue_zero(int playernum);
 int is_leaf(Gamestate s);
 Gamevalue eval_state(Gamestate s);
 Gamevalue gamevalue_merge(Gamevalue v, Gamevalue vmax);
-Gamestate gamestate_init();
 Plays plays_init();
 
 /* ----- solver main ----- */
@@ -54,6 +58,7 @@ Plays plays_init();
 main(){
   Gamestate s;
   s = gamestate_init();
+  gamestate_display(s);
   solver(s);
 }
 
@@ -108,6 +113,41 @@ Gamestate next_state(Gamestate s, Hands p){
   return s;
 }
 
+void gamestate_display(Gamestate s){
+  int i;
+  printf("n %d ", s.playernum);
+
+  printf(":");
+  for(i=0; i<s.playernum; i++){
+    hands_display(s.hand[i]);
+  }
+
+  printf(":");
+  for(i=0; i<s.playernum; i++){
+    printf("%d ",s.passes[i]);
+  }
+
+  printf(":");
+  for(i=0; i<s.playernum; i++){
+    printf("%d ",s.win[i]);
+  }
+
+  printf(":");
+  printf("n %d ", s.lastplayer);
+  printf("n %d ", s.player);
+
+  hands_display(s.ba);
+  printf("\n");
+}
+
+void hands_display(Hands hs){
+  int i;
+  printf("%d ", hs.n);
+  for(i=0; i<hs.n; i++){
+    printf("%d ", hs.card[i]);
+  }
+}
+
 /* ----- player models ----- */
 Plays plays_makecanonicals(Gamestate s){
   /* stab! */
@@ -159,7 +199,7 @@ Hands hands_init(){
 /* ----- support functions ----- */
 Plays plays_init(){
   Plays p;
-  /* stub */
+  p.n = 0;
   return p;
 }
 
@@ -169,14 +209,43 @@ Plays plays_add(Plays ps, Hands h){
   return ps;
 }
 
-Hands hands_lowest(Hands myhand){
-  /* stub */
-  return myhand;
+Hands hands_lowest(Hands h){
+  int i, mini;
+
+  for(i = mini = 0; i < h.n; i++){
+    if(h.card[i] < h.card[mini]){
+      mini = i;
+    }
+  }
+
+  h.n = 1;
+  h.card[0] = h.card[mini];
+  
+  return h;
 }
 
 Hands hands_dellowest(Hands myhand){
-  /* stub */
+  Hands hlow;
+  
+  hlow = hands_lowest(myhand);
+  myhand = hands_delete(myhand, hlow);
+  
   return myhand;
+}
+
+Hands hands_delete(Hands hs, Hands hlow){
+  int i;
+
+  for(i=0; i<hs.n; i++){
+    if(hs.card[i] == hlow.card[0]){
+      hs.card[i] = 0;
+      hs.n = hs.n -1;
+    }
+  }
+  
+  hs = hands_pack(hs);
+
+  return hs;
 }
 
 Hands hands_dellower(Hands myhand, Hands ba){
@@ -199,14 +268,15 @@ int hands_num(Hands myhand){
 }
 
 Hands hands_pack(Hands myhand){
-  int i;
-  int j;
+  int i, j;
+  
   j=0;
   for(i=0; i<myhand.n; i++){
     if(myhand.card[i] == 0) continue;
-    myhand.card[i]=myhand.card[j];
+    myhand.card[i] = myhand.card[j];
     j++;
   }
+  
   return myhand;
 }
 
