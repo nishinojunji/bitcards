@@ -28,15 +28,23 @@ typedef struct{
 
 
 /* ----- prototypes ----- */
+/* cores */
 Gamevalue solver(Gamestate s);
 Gamestate next_state(Gamestate s, Hands p);
 Gamestate gamestate_init();
 void gamestate_display(Gamestate s);
 
-void hands_display(Hands hs);
+Gamestate gamestate_playcard(Gamestate s, Hands p);
+Gamestate gamestate_check_newwin(Gamestate s);
+
 Plays plays_makecanonicals(Gamestate s);
 Plays plays_add(Plays ps, Hands h);
+Plays plays_init();
+void plays_display(Plays ps);
+
+void hands_display(Hands hs);
 Hands hands_pass();
+Hands hands_add(Hands h, int n);
 int hands_is_pass(Hands hs);
 Hands hands_lowest(Hands myhand);
 Hands hands_dellowest(Hands myhand);
@@ -51,7 +59,6 @@ Gamevalue gamevalue_zero(int playernum);
 int is_leaf(Gamestate s);
 Gamevalue eval_state(Gamestate s);
 Gamevalue gamevalue_merge(Gamevalue v, Gamevalue vmax);
-Plays plays_init();
 
 /* ----- solver main ----- */
 
@@ -67,15 +74,21 @@ Gamestate gamestate_init(){
   int i;
 
   printf("gamestate_init : stub now \n");
+
   gs.playernum = 3;
   for (i=0; i<gs.playernum; i++){
     gs.hand[i] = hands_init();
+    gs.hand[i]=hands_add(gs.hand[i], i*3);
+    gs.hand[i]=hands_add(gs.hand[i], i*3+1);
+    gs.hand[i]=hands_add(gs.hand[i], i*3+2);
     gs.passes[i] = 0;
     gs.win[i] = 0;
   }
   gs.lastplayer = gs.playernum;
   gs.player = gs.playernum;
   gs.ba = hands_init();
+
+  gamestate_display(gs);
   return gs;
 }
 
@@ -110,6 +123,30 @@ Gamevalue solver(Gamestate s){
 /* ----- game rules ----- */
 Gamestate next_state(Gamestate s, Hands p){
   /* stab! */
+
+  /* delete played card p */
+  /* update ba */
+  s = gamestate_playcard(s, p);
+  /* win ning check */
+  s = gamestate_check_newwin(s);
+
+  return s;
+  
+}
+
+Gamestate gamestate_check_newwin(Gamestate s){
+  /* stub*/
+  printf("gamestate_check_newwin stub ¥n");
+  
+  if(hands_num(s.hand[s.playernum]) == 0){
+    
+  }
+  return s;
+}
+
+Gamestate gamestate_playcard(Gamestate s, Hands p){
+  s.hand[s.playernum] = hands_delete(s.hand[s.playernum], p);
+  s.ba = p;
   return s;
 }
 
@@ -169,6 +206,12 @@ Plays plays_makecanonicals(Gamestate s){
   ps = plays_add( ps, hands_pass() );
 
   return ps;
+}
+
+Hands hands_add(Hands h, int n){
+  h.card[h.n] = n;
+  h.n++;
+  return h;
 }
 
 Hands hands_pass(){
@@ -325,4 +368,13 @@ Gamevalue gamevalue_merge(Gamevalue v, Gamevalue vmax){
     vmax = v;
   }
   return vmax;
+}
+
+void plays_display(Plays ps){
+  int i;
+  printf("plays_display begin¥n");
+  for(i=0; i<ps.n; i++){
+    hands_display(ps.h[i]);
+  }
+  printf("plays_display end¥n");
 }
